@@ -6,8 +6,6 @@ module.exports = {
   about: "./static/js/public/about/index.js",
   tabpanel: "./static/js/public/hero-tabpanel.js",
   modal: "./static/js/public/modal.js",
-  "manage-members": "./static/js/public/manage-members.js",
-  "manage-snaps": "./static/js/public/manage-snaps.js",
   // TODO:
   // publisher bundle is big (webpack warning) - try to chunk it down
   // https://github.com/canonical-web-and-design/snapcraft.io/issues/1246
@@ -20,7 +18,5 @@ module.exports = {
   search: "./static/js/public/search.js",
   "distro-install": "./static/js/public/distro-install.js",
   "publisher-details": "./static/js/public/publisher-details.js",
-  "brand-store": "./static/js/public/brand-store.js",
-  "manage-invites": "./static/js/public/manage-invites.js",
-  "invite-members": "./static/js/public/invite-members.js",
+  "brand-store": "./static/js/brand-store/brand-store.js",
 };

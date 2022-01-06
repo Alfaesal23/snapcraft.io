@@ -1,6 +1,6 @@
 import FileInput from "./fileInput";
 import React from "react";
-import { render, fireEvent } from "@testing-library/react";
+import { render, fireEvent, waitFor } from "@testing-library/react";
 import * as fileValidation from "../../libs/fileValidation";
 
 describe("FileInput", () => {
@@ -180,8 +180,10 @@ describe("FileInput", () => {
         relatedTarget: null,
       },
     });
-    expect(input.classList.contains("is-dragging")).toEqual(false);
-    expect(input.classList.contains("can-drop")).toEqual(false);
+    waitFor(() => {
+      expect(input.classList.contains("is-dragging")).toEqual(false);
+      expect(input.classList.contains("can-drop")).toEqual(false);
+    });
   });
 
   it("should show a warning if more than 1 image is dragged", () => {

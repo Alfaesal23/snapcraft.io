@@ -63,9 +63,18 @@ def snapcraft_blueprint():
                 "icon_url": "/".join(
                     [icon_host, "2018/03/icon.svg_UYFdU9y.png"]
                 ),
-                "title": "nymea",
-                "origin": "guh GmbH developer",
-                "publisher": "guh GmbH developer",
+                "title": "nymea:core",
+                "origin": "nymea GmbH developer",
+                "publisher": "nymea GmbH developer",
+            },
+            {
+                "package_name": "nymea-app",
+                "icon_url": "/".join(
+                    [icon_host, "2018/03/icon.svg_UYFdU9y.png"]
+                ),
+                "title": "nymea:app",
+                "origin": "nymea GmbH developer",
+                "publisher": "nymea GmbH developer",
             },
             {
                 "package_name": "domotzpro-agent-publicstore",
@@ -80,6 +89,31 @@ def snapcraft_blueprint():
                 ),
                 "origin": "domotzpublicstore",
                 "publisher": "Domotz",
+            },
+            {
+                "package_name": "mycroft",
+                "icon_url": "/".join([icon_host, "2018/06/icon_brV5dye.png"]),
+                "title": "Mycroft AI",
+                "origin": "Mycroft AI",
+                "publisher": "Mycroft AI",
+            },
+            {
+                "package_name": "edgexfoundry",
+                "icon_url": "/".join([icon_host, "2018/12/icon_Hx6IyH0.png"]),
+                "title": "edgexfoundry",
+                "origin": "Canonical",
+                "publisher": "Canonical",
+                "developer_validation": "verified",
+            },
+            {
+                "package_name": "mir-kiosk",
+                "icon_url": "/".join(
+                    [icon_host, "2021/06/mir-sqr-stacked-orng.png"]
+                ),
+                "title": "mir-kiosk",
+                "origin": "Canonical",
+                "publisher": "Canonical",
+                "developer_validation": "verified",
             },
         ]
 
@@ -135,6 +169,15 @@ def snapcraft_blueprint():
                 "title": "ixagent",
                 "origin": "ixot",
                 "publisher": "Michael Hathaway",
+            },
+            {
+                "package_name": "anyvizcloudadapter",
+                "icon_url": "/".join(
+                    [icon_host, "2020/06/LogoAnyViz_Wolke512.svg.png"]
+                ),
+                "title": "anyvizcloudadapter",
+                "origin": "mirasoft",
+                "publisher": "Mirasoft GmbH & Co KG",
             },
         ]
 
@@ -225,6 +268,13 @@ def snapcraft_blueprint():
                 "publisher": "Canonical",
                 "developer_validation": "verified",
             },
+            {
+                "package_name": "rpi-imager",
+                "icon_url": "/".join([icon_host, "2020/03/rpi-imager.png"]),
+                "title": "Raspberry Pi Imager",
+                "origin": "Alan Pope",
+                "publisher": "Alan Pope",
+            },
         ]
 
         context = {
@@ -306,24 +356,6 @@ def snapcraft_blueprint():
         response.headers["Content-Type"] = "application/xml"
         response.headers["Cache-Control"] = "public, max-age=43200"
 
-        return response
-
-    @snapcraft.route("/snapcraft-no-js.png")
-    def pixel_no_js():
-        users_without_js.inc()
-        response = flask.make_response(
-            flask.send_file("snapcraft/snapcraft.png", mimetype="image/png")
-        )
-        response.headers["Cache-Control"] = "private"
-        return response
-
-    @snapcraft.route("/snapcraft-with-js.png")
-    def pixel_with_js():
-        users_with_js.inc()
-        response = flask.make_response(
-            flask.send_file("snapcraft/snapcraft.png", mimetype="image/png")
-        )
-        response.headers["Cache-Control"] = "private"
         return response
 
     return snapcraft

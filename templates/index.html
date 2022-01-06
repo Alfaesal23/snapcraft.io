@@ -51,19 +51,21 @@
       <button type="submit" alt="search" class="p-button--positive">Search</button>
     </form>
 
+    {% set selected_index = range(1, hero_categories | length + 1) | random %}
+
     <div data-js="hero-snaps-container">
       <div class="u-fixed-width u-clearfix" style="margin-block-start: 1.5rem;">
         <p class="p-heading--5 u-float-left">Some snaps you may like</p>
         <p class="u-float-right">
         {% for category in hero_categories %}
-          <a href="/search?category={{ category|lower }}" id="view-all-{{ category|lower }}" class="p-hero-tab__link{% if loop.index > 1 %} u-hide{% endif %}" data-js="view-all">View all {{ category }} snaps&nbsp;&rsaquo;</a>
+          <a href="/search?category={{ category|lower }}" id="view-all-{{ category|lower }}" class="p-hero-tab__link{% if loop.index != selected_index %} u-hide{% endif %}" data-js="view-all">View all {{ category }} snaps&nbsp;&rsaquo;</a>
         {% endfor %}
         </p>
       </div>
 
       <div data-js="panels-container">
         {% for category in hero_categories %}
-        <div class="p-hero-panel row u-no-padding--left u-no-padding--right{% if loop.index == 1 %} u-animate--reveal{% endif%}" id="panel-{{ category|lower }}-snaps" role="tabpanel" aria-labelledby="{{ category|lower }}-snaps">
+        <div class="p-hero-panel row u-no-padding--left u-no-padding--right{% if loop.index == selected_index %} u-animate--reveal{% endif%}" id="panel-{{ category|lower }}-snaps" role="tabpanel" aria-labelledby="{{ category|lower }}-snaps">
           {% for _ in range(0, 3) %}
           <div class="col-4">
             <div class="p-card p-media-object p-media-object--snap is-placeholder">
@@ -88,7 +90,7 @@
       <div class="u-fixed-width p-hero-tab">
         <div role="tablist" aria-label="Fatured snaps" class="p-hero-tab__list">
           {% for category in hero_categories %}
-          <button role="tab" aria-selected="{% if loop.index == 1 %}true{% else %}false{% endif %}" aria-controls="panel-{{ category|lower }}-snaps" id="{{ category|lower }}-snaps" class="p-hero-tab__item" data-js="carousel-tab">
+          <button role="tab" aria-selected="{% if loop.index == selected_index %}true{% else %}false{% endif %}" aria-controls="panel-{{ category|lower }}-snaps" id="{{ category|lower }}-snaps" class="p-hero-tab__item" data-js="carousel-tab">
             <i class="before"></i>
             <p class="p-hero-tab__title">{{ category }}</p>
           </button>
@@ -105,7 +107,7 @@
 
 <section class="p-strip">
   <div class="row">
-    <h3 class="p-muted-heading">Official snaps from major publishers</h3>
+    <h2 class="p-muted-heading">Official snaps from major publishers</h2>
   </div>
   <div class="row">
     <div class="col-small-2 col-medium-3 col-2 col-logo u-align--center">
@@ -201,7 +203,7 @@
 
 <section class="p-strip" data-js="latest-news">
   <div class="u-fixed-width">
-    <h3 class="p-heading--2">Latest  news from <a href="/blog">our blog&nbsp;&rsaquo;</a></h3>
+    <h2>Latest  news from <a href="/blog">our blog&nbsp;&rsaquo;</a></h2>
   </div>
   <div id="horizontal-latest-articles" class="row" style="min-height: 84px;">
     <div class="u-align--center" style="min-height: 9.1rem;"><i class="p-icon--spinner u-animation--spin">Loading...</i></div>
@@ -233,7 +235,7 @@
 
 <div class="p-strip">
   <div class="u-fixed-width">
-    <h3 class="p-heading--2">Learn how to snap an app <br class="u-hide--large" /> in 30 minutes</h3>
+    <h2>Learn how to snap an app <br class="u-hide--large" /> in 30 minutes</h2>
     <p>What language or framework does your app use?</p>
   </div>
   {% include "partials/fsf_language.html" %}
@@ -244,6 +246,9 @@
 </div>
 
 <div class="p-strip">
+  <div class="u-fixed-width">
+    <h2>Testimonials</h2>
+  </div>
   <div class="row">
     <div class="col-4">
       <blockquote class="p-testimonial">
@@ -260,7 +265,7 @@
             }}
           </a>
         </div>
-        <h4 class="p-testimonial__title">“The auto-updating feature is huge”</h4>
+        <h3 class="p-testimonial__title">“The auto-updating feature is huge”</h3>
         <p class="p-testimonial__content">Due to the nature of our platform, we release updates more than daily which admittedly can be annoying for our users to constantly update.</p>
         <p class="p-testimonial__content">Therefore, having them done seamlessly in the background makes life for our users so much easier. It’s great to see snaps as the first serious attempt to try and unify the community.</p>
         <cite class="p-testimonial__citation">
@@ -283,7 +288,7 @@
             }}
           </a>
         </div>
-        <h4 class="p-testimonial__title">“Starting with snaps is easy”</h4>
+        <h3 class="p-testimonial__title">“Starting with snaps is easy”</h3>
         <p class="p-testimonial__content">We definitely find Snapcraft easier as it is yaml based and provides details of what artifacts are needed. Debian packaging has things that need to be followed which can be distribution specific, which creates complication.
         <p class="p-testimonial__content">The modular containment is what appealed about snaps and [we] can see it will be a lot more flexible. Starting with snaps is easy and the resources that are provided are clean and structured which aids adoption.</p>
         <cite class="p-testimonial__citation">
@@ -306,7 +311,7 @@
             }}
           </a>
         </div>
-        <h4 class="p-testimonial__title">“A major software discovery tool”</h4>
+        <h3 class="p-testimonial__title">“A major software discovery tool”</h3>
         <p class="p-testimonial__content">The Snap store provides additional exposure to our tools for many of our existing and potential users. The decision to use it came quite naturally. We believe the store will be a major software discovery tool on Linux, so the more people find out about our tools naturally and install them more easily, the better for everyone.</p>
         <cite class="p-testimonial__citation">
           Aleksey Rostovskiy<br /> Engineer, <a href="https://www.jetbrains.com/" class="p-link--external">JetBrains</a>
@@ -323,7 +328,7 @@
 <div class="p-strip">
   <div class="row">
     <div class="col-6">
-      <h3 class="p-heading--2"> One build <br>for all Linux and IoT</h3>
+      <h2> One build <br>for all Linux and IoT</h2>
     </div>
     <div class="col-6">
       <p>Snaps work across Linux on any distribution or version. Bundle your dependencies and assets, simplifying installs to a single standard command.</p>
@@ -348,7 +353,7 @@
       <a class="p-logo-link" href="/docs/installing-snap-on-debian">
         {{
           image(
-            url="https://assets.ubuntu.com/v1/f7f680fb-debian.png",
+            url="https://assets.ubuntu.com/v1/ea24e262-debian.png",
             alt="Debian",
             width="155",
             height="155",
@@ -419,7 +424,7 @@
 <section class="p-strip">
   <div class="row">
     <div class="col-6">
-      <h3 class="p-heading--2">Showcase to millions</h3>
+      <h2>Showcase to millions</h2>
       <p>Reach beyond your existing audience with a listing on the Snap Store, the front page for app discovery on Ubuntu and other popular distros.</p>
       <p><a class="p-button--neutral" href="/store">Browse the Snap Store</a></p>
     </div>
@@ -444,7 +449,7 @@
 <section class="p-strip">
   <div class="row">
     <div class="col-6">
-      <h3 class="p-heading--2">Measure user growth</h3>
+      <h2>Measure user growth</h2>
       <p>Make data-driven decisions with active install metrics. Watch as automatic updates migrate users to your latest release. Understand your audience with geographic and version breakdowns.</p>
     </div>
     <div class="col-6">

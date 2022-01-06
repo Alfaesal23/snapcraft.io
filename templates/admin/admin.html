@@ -1,10 +1,12 @@
-{% set current_tab = "snaps" %}
+{% set page_slug = "admin" %}
+{% extends "_base-layout.html" %}
+{% block content %}
+<div id="root">
+</div>
 
-{% extends "/admin/admin_layout.html" %}
-
-{% block meta_title %}Admin | Snapcraft{% endblock %}
-
-{% block admin_content %}
-{% include "/admin/_snaps_section.html" %}
+<script>
+  window.CSRF_TOKEN = "{{ csrf_token() }}";
+  window.SENTRY_DSN = "{{ SENTRY_DSN }}";
+</script>
+<script src="{{ static_url('js/dist/brand-store.js') }}"></script>
 {% endblock %}
-

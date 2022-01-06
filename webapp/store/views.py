@@ -18,8 +18,11 @@ from canonicalwebteam.store_api.exceptions import (
 from webapp.api.exceptions import ApiError
 from webapp.snapcraft import logic as snapcraft_logic
 from webapp.store.snap_details_views import snap_details_views
+import os
 
 session = talisker.requests.get_session(requests.Session)
+
+YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
 
 
 def store_blueprint(store_query=None):
@@ -144,6 +147,26 @@ def store_blueprint(store_query=None):
 
         size = 44
 
+        publishers = {
+            "jetbrains": "28zEonXNoBLvIB7xneRbltOsp0Nf7DwS",
+            "kde": "2rsYZu6kqYVFsSejExu4YENdXQEO40Xb",
+            "snapcrafters": "eEoV9TnaNkCzfJBu9SRhr2678vzyYV43",
+        }
+
+        display_query = snap_searched
+
+        if "publisher:jetbrains" in snap_searched:
+            snap_searched = f'publisher:{publishers["jetbrains"]}'
+            display_query = "publisher:jetbrains"
+
+        if "publisher:kde" in snap_searched:
+            snap_searched = f'publisher:{publishers["kde"]}'
+            display_query = "publisher:kde"
+
+        if "publisher:snapcrafters" in snap_searched:
+            snap_searched = f'publisher:{publishers["snapcrafters"]}'
+            display_query = "publisher:snapcrafters"
+
         try:
             searched_results = api.search(
                 snap_searched,
@@ -224,6 +247,7 @@ def store_blueprint(store_query=None):
             "total": total_results_count,
             "links": links,
             "page": page,
+            "display_query": display_query,
         }
 
         return flask.render_template("store/search.html", **context)
@@ -274,6 +298,18 @@ def store_blueprint(store_query=None):
             status_code,
         )
 
+    @store.route("/youtube/<video_id>")
+    def get_video_thumbnail_data(video_id):
+        thumbnail_url = "https://www.googleapis.com/youtube/v3/videos"
+        thumbnail_data = session.get(
+            f"{thumbnail_url}?id={video_id}&part=snippet&key={YOUTUBE_API_KEY}"
+        )
+
+        if thumbnail_data:
+            return thumbnail_data.json()
+
+        return {}
+
     @store.route("/publisher/<regex('[a-z0-9-]*[a-z][a-z0-9-]*'):publisher>")
     def publisher_details(publisher):
         """
@@ -287,6 +323,13 @@ def store_blueprint(store_query=None):
         context = helpers.get_yaml(
             publisher_content_path + publisher + ".yaml", typ="safe"
         )
+
+        popular_snaps = helpers.get_yaml(
+            publisher_content_path + publisher + "-snaps.yaml",
+            typ="safe",
+        )
+
+        context["popular_snaps"] = popular_snaps["snaps"]
 
         if not context:
             flask.abort(404)
@@ -306,13 +349,6 @@ def store_blueprint(store_query=None):
                     [snap for snap in snaps_results if snap["apps"]]
                 )
 
-        if "snaps" not in context:
-            snaps = helpers.get_yaml(
-                publisher_content_path + publisher + "-snaps.yaml", typ="safe"
-            )
-
-            context["snaps"] = snaps["snaps"]
-
         featured_snaps = [
             snap["package_name"] for snap in context["featured_snaps"]
         ]
@@ -322,6 +358,8 @@ def store_blueprint(store_query=None):
             for snap in context["snaps"]
             if snap["package_name"] not in featured_snaps
         ]
+
+        context["snaps_count"] = len(snaps_results)
 
         return flask.render_template("store/publisher-details.html", **context)
 

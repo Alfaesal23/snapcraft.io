@@ -173,7 +173,7 @@ Settings for {% if display_title %}{{ display_title }}{% else %}{{ snap_title }}
       </div>
 
       <div class="row p-form__group">
-        <hr class="u-no-margin--bottom" />
+        <hr class="u-no-margin--bottom">
       </div>
 
       <div class="row p-form__group">
@@ -256,7 +256,8 @@ Settings for {% if display_title %}{{ display_title }}{% else %}{{ snap_title }}
         'private': {{ private|tojson }},
         'unlisted': {{ unlisted|tojson }},
         'whitelist_countries': {{ whitelist_country_codes|tojson }},
-        'blacklist_countries': {{ blacklist_country_codes|tojson }}
+        'blacklist_countries': {{ blacklist_country_codes|tojson }},
+        'update_metadata_on_release': {{ update_metadata_on_release|tojson }},
       },
       {% if error_list %}
         {{ error_list|tojson}}
@@ -278,6 +279,21 @@ Settings for {% if display_title %}{{ display_title }}{% else %}{{ snap_title }}
       {% elif blacklist_country_codes %}
         snapcraft.publisher.settings.enableInput('blacklist');
       {% endif %}
+
+      var updateMetadataToggle = document.getElementById("update_metadata_on_release");
+      var updateMetadataWarning = document.getElementById("metadata-edit-warning");
+
+      updateMetadataToggle.addEventListener("click", function(e) {
+        const target = e.currentTarget;
+
+        if (target.checked) {
+          updateMetadataWarning.classList.remove("u-hide");
+          updateMetadataWarning.ariaHidden = false;
+        } else {
+          updateMetadataWarning.classList.add("u-hide");
+          updateMetadataWarning.ariaHidden = true;
+        }
+      });
     });
   });
 </script>

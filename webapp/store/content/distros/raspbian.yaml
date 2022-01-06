@@ -1,7 +1,7 @@
 name: Raspberry Pi
 color-1: "#c05672"
 color-2: "#a22846"
-logo: https://assets.ubuntu.com/v1/a8a6238c-RGB+RPi.svg
+logo: https://assets.ubuntu.com/v1/193cb6ac-logo-raspberry-pi.svg
 logo-mono: https://assets.ubuntu.com/v1/a31b1451-rpi-b-w.svg
 install:
   - action: |
@@ -13,3 +13,7 @@ install:
       You will also need to reboot your device:
     command: |
       sudo reboot
+  - action: |
+      After this, install the core snap in order to get the latest snapd:
+    command: |
+      sudo snap install core

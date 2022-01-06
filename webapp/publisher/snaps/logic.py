@@ -51,6 +51,23 @@ def get_snaps_account_info(account_info):
     return user_snaps, registered_snaps
 
 
+def get_stores(stores, roles):
+    """Get list of stores where the user has the specified roles
+
+    :param stores: The account stores
+    :param roles: The requested roles to filter
+
+    :return: A list of stores
+    """
+    user_stores = []
+
+    for store in stores:
+        if not set(roles).isdisjoint(store["roles"]):
+            user_stores.append(store)
+
+    return user_stores
+
+
 def get_snap_names_by_ownership(account_info):
     """Get list of snaps names user is collaborator of
 
@@ -270,6 +287,7 @@ def filter_changes_data(changes):
         "license",
         "video_urls",
         "categories",
+        "update_metadata_on_release",
     ]
 
     return {key: changes[key] for key in whitelist if key in changes}

@@ -1,4 +1,5 @@
 import os
+import datetime
 
 import flask
 from canonicalwebteam.candid import CandidClient
@@ -28,7 +29,7 @@ LOGIN_URL = os.getenv("LOGIN_URL", "https://login.ubuntu.com")
 LP_CANONICAL_TEAM = "canonical"
 
 open_id = OpenID(
-    stateless=True,
+    store_factory=lambda: None,
     safe_roots=[],
     extension_responses=[MacaroonResponse, TeamsResponse],
 )
@@ -73,6 +74,8 @@ def login_handler():
 
 @open_id.after_login
 def after_login(resp):
+    flask.session.pop("macaroons", None)
+
     flask.session["macaroon_discharge"] = resp.extensions["macaroon"].discharge
     if not resp.nickname:
         return flask.redirect(LOGIN_URL)
@@ -90,6 +93,9 @@ def after_login(resp):
         }
         owned, shared = logic.get_snap_names_by_ownership(account)
         flask.session["user_shared_snaps"] = shared
+        flask.session["publisher"]["stores"] = logic.get_stores(
+            account["stores"], roles=["admin", "review", "view"]
+        )
 
     except ApiCircuitBreaker:
         flask.abort(503)
@@ -102,7 +108,21 @@ def after_login(resp):
             "email": resp.email,
         }
 
-    return flask.redirect(open_id.get_next_url())
+    response = flask.make_response(
+        flask.redirect(
+            open_id.get_next_url(),
+            302,
+        ),
+    )
+
+    # Set cookie to know where to redirect users for re-auth
+    response.set_cookie(
+        "last_login_method",
+        "sso",
+        expires=datetime.datetime.now() + datetime.timedelta(days=365),
+    )
+
+    return response
 
 
 @login.route("/login-beta", methods=["GET"])
@@ -129,9 +149,9 @@ def login_candid():
     next_url = flask.request.args.get("next")
 
     if next_url:
-        if not next_url.startswith(
+        if not next_url.startswith("/") and not next_url.startswith(
             flask.request.url_root
-        ) or next_url.startswith("/"):
+        ):
             return flask.abort(400)
         flask.session["next_url"] = next_url
 
@@ -142,6 +162,9 @@ def login_candid():
 def login_callback():
     code = flask.request.args["code"]
     state = flask.request.args["state"]
+
+    flask.session.pop("macaroon_root", None)
+    flask.session.pop("macaroon_discharge", None)
 
     # Avoid CSRF attacks
     validate_csrf(state)
@@ -158,6 +181,7 @@ def login_callback():
 
     try:
         publisher = publisher_api.whoami(flask.session)
+        account = publisher_api.get_account(flask.session)
     except StoreApiResponseErrorList as api_response_error_list:
         return _handle_error_list(api_response_error_list.errors)
     except (StoreApiError, ApiError) as api_error:
@@ -171,13 +195,28 @@ def login_callback():
         "email": publisher["account"]["email"],
     }
 
-    return flask.redirect(
-        flask.session.pop(
-            "next_url",
-            flask.url_for("publisher_snaps.get_account_snaps"),
-        ),
-        302,
+    flask.session["publisher"]["stores"] = logic.get_stores(
+        account["stores"], roles=["admin", "review", "view"]
     )
+
+    response = flask.make_response(
+        flask.redirect(
+            flask.session.pop(
+                "next_url",
+                flask.url_for("publisher_snaps.get_account_snaps"),
+            ),
+            302,
+        ),
+    )
+
+    # Set cookie to know where to redirect users for re-auth
+    response.set_cookie(
+        "last_login_method",
+        "candid",
+        expires=datetime.datetime.now() + datetime.timedelta(days=365),
+    )
+
+    return response
 
 
 @login.route("/logout")

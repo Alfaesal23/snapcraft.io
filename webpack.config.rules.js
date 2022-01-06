@@ -41,24 +41,6 @@ module.exports = [
     use: ["expose-loader?exposes=snapcraft.public.tabpanel", "babel-loader"],
   },
   {
-    test: require.resolve(__dirname + "/static/js/public/manage-invites.js"),
-    use: [
-      "expose-loader?exposes=snapcraft.public.manageInvites",
-      "babel-loader",
-    ],
-  },
-  {
-    test: require.resolve(__dirname + "/static/js/public/manage-members.js"),
-    use: [
-      "expose-loader?exposes=snapcraft.public.manageMembers",
-      "babel-loader",
-    ],
-  },
-  {
-    test: require.resolve(__dirname + "/static/js/public/manage-snaps.js"),
-    use: ["expose-loader?exposes=snapcraft.public.manageSnaps", "babel-loader"],
-  },
-  {
     test: require.resolve(__dirname + "/static/js/public/modal.js"),
     use: ["expose-loader?exposes=snapcraft.public.modal", "babel-loader"],
   },
@@ -108,10 +90,7 @@ module.exports = [
     use: ["expose-loader?exposes=snapcraft.public.brandStore", "babel-loader"],
   },
   {
-    test: require.resolve(__dirname + "/static/js/public/invite-members.js"),
-    use: [
-      "expose-loader?exposes=snapcraft.public.inviteMembers",
-      "babel-loader",
-    ],
+    test: /\.tsx?/,
+    use: ["ts-loader"],
   },
 ];
